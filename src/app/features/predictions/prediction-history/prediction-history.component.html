@@ -1,0 +1,58 @@
+<div class="page-container">
+  <div class="page-header">
+    <h1>Prediction History</h1>
+  </div>
+
+  <div *ngIf="loading" class="loading-spinner">Loading...</div>
+
+  <div *ngIf="!loading && predictions.length === 0" class="empty-state large">
+    <div class="empty-icon">🤖</div>
+    <h2>No predictions yet</h2>
+    <p>Add a player and the system will predict their best position!</p>
+  </div>
+
+  <div *ngIf="predictions.length > 0" class="history-layout">
+    <div class="card chart-card">
+      <h3>Positions Distribution</h3>
+      <canvas baseChart
+        [data]="donutData"
+        [options]="donutOptions"
+        type="doughnut">
+      </canvas>
+    </div>
+
+    <div class="history-table-wrap">
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Player</th>
+            <th>Position</th>
+            <th>Confidence</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let p of predictions; let i = index">
+            <td>{{ i + 1 }}</td>
+            <td>{{ p.playerName ?? '—' }}</td>
+            <td>
+              <span class="pos-badge"
+                    [style.background]="positionColor(p.predictedPosition)">
+                {{ p.predictedPosition }}
+              </span>
+            </td>
+            <td>
+              <div class="conf-bar-wrap">
+                <div class="conf-bar"
+                     [style.width.%]="p.confidence * 100"></div>
+                <span>{{ (p.confidence * 100).toFixed(1) }}%</span>
+              </div>
+            </td>
+            <td>{{ p.predictionDate | date:'dd MMM y, HH:mm' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

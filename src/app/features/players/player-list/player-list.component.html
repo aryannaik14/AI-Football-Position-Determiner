@@ -1,0 +1,63 @@
+<div class="page-container">
+  <div class="page-header">
+    <h1>Players</h1>
+    <a routerLink="/players/new" class="btn-primary">+ Add Player</a>
+  </div>
+
+  <div *ngIf="loading" class="loading-spinner">Loading players...</div>
+
+  <div *ngIf="!loading && players.length === 0" class="empty-state large">
+    <div class="empty-icon">⚽</div>
+    <h2>No players yet</h2>
+    <p>Add your first player to get AI position recommendations!</p>
+    <a routerLink="/players/new" class="btn-primary">Add Player</a>
+  </div>
+
+  <div class="players-grid" *ngIf="players.length > 0">
+    <div class="player-card" *ngFor="let player of players">
+      <div class="card-top">
+        <div class="player-avatar-lg">{{ player.name[0] }}</div>
+        <div class="player-basic">
+          <h3>{{ player.name }}</h3>
+          <p>Age {{ player.age }} · {{ player.height }}cm · {{ player.weight }}kg</p>
+        </div>
+        <div class="latest-pos"
+             *ngIf="player.position"
+             [style.background]="positionColor(player.position)">
+          {{ player.position }}
+          <small *ngIf="player.predictions.length > 0">
+            {{ (player.predictions[0].confidence * 100).toFixed(0) }}%
+          </small>
+        </div>
+      </div>
+
+      <div class="radar-container">
+        <canvas baseChart
+          [data]="radarData(player)"
+          [options]="radarOptions"
+          type="radar">
+        </canvas>
+      </div>
+
+      <div class="attr-mini-grid">
+        <span class="attr-mini">⚡ {{ player.speed }}</span>
+        <span class="attr-mini">🔋 {{ player.stamina }}</span>
+        <span class="attr-mini">💪 {{ player.strength }}</span>
+        <span class="attr-mini">🎯 {{ player.passing }}</span>
+        <span class="attr-mini">⚽ {{ player.dribbling }}</span>
+        <span class="attr-mini">👁️ {{ player.vision }}</span>
+        <span class="attr-mini">🥅 {{ player.shooting }}</span>
+        <span class="attr-mini">🛡️ {{ player.defending }}</span>
+      </div>
+
+      <div class="card-actions">
+        <button class="btn-predict"
+                (click)="predict(player)"
+                [disabled]="predictingId === player.id">
+          {{ predictingId === player.id ? '🔄 Predicting...' : '🤖 Re-Predict' }}
+        </button>
+        <button class="btn-delete" (click)="deletePlayer(player.id)">🗑️</button>
+      </div>
+    </div>
+  </div>
+</div>

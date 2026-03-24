@@ -1,0 +1,80 @@
+<div class="page-container">
+  <div class="page-header">
+    <h1>Welcome back, {{ auth.user?.username }}! 👋</h1>
+    <a routerLink="/players/new" class="btn-primary">+ Add Player</a>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon">👥</div>
+      <div class="stat-value">{{ players.length }}</div>
+      <div class="stat-label">Total Players</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🤖</div>
+      <div class="stat-value">{{ totalPredictions }}</div>
+      <div class="stat-label">Predictions Made</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">📊</div>
+      <div class="stat-value">
+        {{ recentPredictions[0]?.predictedPosition || '—' }}
+      </div>
+      <div class="stat-label">Latest Prediction</div>
+    </div>
+  </div>
+
+  <div class="dashboard-grid">
+    <div class="card">
+      <div class="card-header">
+        <h2>Your Players</h2>
+        <a routerLink="/players" class="link">View all →</a>
+      </div>
+      <div *ngIf="loading" class="loading">Loading...</div>
+      <div *ngIf="!loading && players.length === 0" class="empty-state">
+        <p>No players yet.</p>
+        <a routerLink="/players/new" class="btn-primary">Add your first player</a>
+      </div>
+      <div class="player-list" *ngIf="players.length > 0">
+        <div class="player-item" *ngFor="let p of players.slice(0, 5)">
+          <div class="player-avatar">{{ p.name[0] }}</div>
+          <div class="player-info">
+            <div class="player-name">{{ p.name }}</div>
+            <div class="player-meta">Age {{ p.age }} · {{ p.height }}cm</div>
+          </div>
+          <div class="player-pos"
+               [style.background]="positionColor(p.position)">
+            {{ p.position }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h2>Recent Predictions</h2>
+        <a routerLink="/history" class="link">View all →</a>
+      </div>
+      <div *ngIf="recentPredictions.length === 0" class="empty-state">
+        <p>No predictions yet.</p>
+      </div>
+      <div class="prediction-list" *ngIf="recentPredictions.length > 0">
+        <div class="prediction-item"
+             *ngFor="let pred of recentPredictions">
+          <div class="pred-pos-badge"
+               [style.background]="positionColor(pred.predictedPosition)">
+            {{ pred.predictedPosition }}
+          </div>
+          <div class="pred-info">
+            <div class="pred-conf">
+              {{ (pred.confidence * 100).toFixed(1) }}% confidence
+            </div>
+            <div class="pred-date">
+              {{ pred.predictionDate | date:'short' }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
